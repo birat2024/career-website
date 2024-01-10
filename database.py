@@ -3,6 +3,16 @@ import os
 
 db_connection_string = os.environ['DB_CONNECTION_STRING']
 
+
+try:
+  # Create an engine and test the connection
+  engine = create_engine(db_connection_string)
+  connection = engine.connect()
+  print("Database connection established successfully.")
+  connection.close()
+except Exception as e:
+  print(f"Error connecting to the database: {str(e)}")
+
 engine = create_engine(
     db_connection_string,
     connect_args={
@@ -60,7 +70,36 @@ def add_application_to_db(job_id, data):
           'resume_url': data['resume_url']
       })
 
+def add_user_to_db(username, hashed_password, email, first_name, last_name):
+  try:
+      with engine.connect() as conn:
+          query = text("""
+              INSERT INTO users (username, password_hash, email, first_name, last_name)
+              VALUES (:username, :password_hash, :email, :first_name, :last_name)
+          """)
 
+          conn.execute(query, {
+              'username': username,
+              'password_hash': hashed_password,
+              'email': email,
+              'first_name': first_name,
+              'last_name': last_name
+          })
+
+  except Exception as e:
+      # Log the error for debugging
+      print(f"Error inserting user: {str(e)}")
+
+
+def get_user_from_db(username):
+  with engine.connect() as conn:
+      query = text("SELECT * FROM users WHERE username = :username")
+      result = conn.execute(query, {'username': username})
+      user = result.fetchone()
+      if user:
+          user_dict = {key: getattr(user, key) for key in user.keys()}
+          return user_dict
+      return None
 
 
 

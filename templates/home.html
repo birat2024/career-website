@@ -22,14 +22,13 @@
         
     </div>
     <h2 class="text-center mt-2 mb -4">Open Positions</h2>
-    <div>
-      {% for job in jobs %} 
-        {%include 'jobitem.html' %}
-      {% endfor %}
-    </div>
+        {% for job in jobs %}
+            {% include 'jobitem.html' %}
+        {% endfor %}
+   
     <div class="text-center">
       <a class="btn btn-primary btn-lg" href= "https://google.com">Contact Us</a>
     </div>
-    {% include 'footer.html' %}
+
   </body>
 </html>
